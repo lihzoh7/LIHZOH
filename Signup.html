@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sign Up</title>
+
+<style>
+body {
+  background: lightblue;
+  font-family: Arial;
+  margin: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 500px;
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+  color: white;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: green;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.back {
+  font-size: 20px;
+  cursor: pointer;
+}
+small {
+  color: white;
+  font-size: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+  <div class="back" onclick="location.href='index.html'">↩️</div>
+
+  <h2>PERSONAL DETAILS</h2>
+  <input id="name" placeholder="Name">
+  <input id="surname" placeholder="Surname">
+  <input id="idNumber" placeholder="ID Number">
+  <input id="email" placeholder="Email Address">
+  <input id="nationality" placeholder="Nationality">
+  <input id="cell" placeholder="Cell Number">
+
+  <input id="address" placeholder="Home Address">
+  <input id="suburb" placeholder="Suburb">
+  <input id="city" placeholder="City">
+  <input id="zip" placeholder="Zip Code">
+
+  <h2>SECURITY</h2>
+  <input type="password" id="password" placeholder="Password">
+  <small>Minimum 8 characters</small>
+  <input type="password" id="confirm" placeholder="Confirm Password">
+
+  <h2>BANK DETAILS</h2>
+  <input id="bank" placeholder="Bank Name">
+  <input id="account" placeholder="Account Number">
+
+  <button id="submit">SUBMIT</button>
+</div>
+
+<script type="module">
+import { auth, database } from "./js/firebase.js";
+import {
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import {
+  ref, set, get
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+document.getElementById("submit").onclick = async () => {
+  const email = document.getElementById("email").value.toLowerCase();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const id = document.getElementById("idNumber").value;
+
+  if (password.length < 8 || password !== confirm) {
+    alert("Password error");
+    return;
+  }
+
+  const idRef = ref(database, "ids/" + id);
+  const snap = await get(idRef);
+  if (snap.exists()) {
+    alert("ID already exists");
+    return;
+  }
+
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+  await set(ref(database, "users/" + userCred.user.uid), {
+    name: name.value,
+    surname: surname.value,
+    id,
+    email,
+    nationality: nationality.value,
+    cell: cell.value,
+    address: address.value,
+    suburb: suburb.value,
+    city: city.value,
+    zip: zip.value,
+    bank: bank.value,
+    account: account.value,
+    balance: 0,
+    lives: 0
+  });
+
+  await set(idRef, true);
+
+  alert("SUBMITTED");
+  location.href = "index.html";
+};
+</script>
+
+</body>
+</html>
