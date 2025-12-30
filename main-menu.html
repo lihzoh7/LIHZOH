@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPACE GLASS | Main Menu</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: url("assets/images/milkyway.jpg") center/cover no-repeat;
+  color: white;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  font-size: 22px;
+}
+
+.center {
+  text-align: center;
+  margin-top: 40px;
+}
+
+h1 {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.glass {
+  font-size: 200px;
+  opacity: 0.15;
+  transform: rotate(15deg);
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(2, 120px);
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.menu div {
+  background: rgba(255,255,255,0.2);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+
+<div class="top-bar">
+  <div id="logout">🔙</div>
+  <div>
+    <span id="messages">✉</span>
+    <span id="profile">👤</span>
+  </div>
+</div>
+
+<div class="center">
+  <h1>SPACE GLASS</h1>
+  <div class="glass">🍸</div>
+
+  <div class="menu">
+    <div onclick="location.href='prizes.html'">PRIZES</div>
+    <div onclick="location.href='scores.html'">SCORES</div>
+    <div id="play">PLAY</div>
+    <div onclick="location.href='wallet.html'">WALLET</div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, database } from "./js/firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+onAuthStateChanged(auth, user => {
+  if (!user) location.href = "index.html";
+});
+
+document.getElementById("logout").onclick = async () => {
+  await signOut(auth);
+  location.href = "index.html";
+};
+
+document.getElementById("profile").onclick = () => {
+  location.href = "profile.html";
+};
+
+document.getElementById("messages").onclick = () => {
+  location.href = "messages.html";
+};
+
+document.getElementById("play").onclick = async () => {
+  const snap = await get(ref(database, "currentGame/prize"));
+  if (!snap.exists()) {
+    alert("PRIZE NOT SET YET");
+  } else {
+    location.href = "game.html";
+  }
+};
+</script>
+
+</body>
+</html>
